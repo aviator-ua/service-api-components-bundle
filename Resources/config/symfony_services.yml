@@ -73,7 +73,7 @@ services:
             - '@property_info'
 
     auto1.api.serializer.normalizer.stream_interface:
-        class: Auto1\ServiceAPIComponentsBundle\Serializer\Normalizer\StreamInterfaceDenormalizer
+        class: Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer\StreamInterfaceDenormalizer
 
     auto1.api.request.serializer:
         class: Symfony\Component\Serializer\Serializer

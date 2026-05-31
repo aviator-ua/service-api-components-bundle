@@ -11,9 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Auto1\ServiceAPIComponentsBundle\Serializer\Normalizer;
+namespace Tests\Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
 
-use Auto1\ServiceAPIComponentsBundle\Serializer\Normalizer\StreamInterfaceDenormalizer;
+use Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer\StreamInterfaceDenormalizer;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
@@ -26,51 +27,51 @@ class StreamInterfaceDenormalizerTest extends TestCase
 
     public function testSupportsDenormalizationForStreamInterface(): void
     {
-        $cut = $this->getCut();
+        $denormalizer = $this->getCut();
 
-        $result = $cut->supportsDenormalization(null, StreamInterface::class);
+        $result = $denormalizer->supportsDenormalization(null, StreamInterface::class);
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     public function testDoesNotSupportOtherTypes(): void
     {
         $targetUnsupportedType = \stdClass::class;
 
-        $cut = $this->getCut();
+        $denormalizer = $this->getCut();
 
-        $result = $cut->supportsDenormalization(null, $targetUnsupportedType);
+        $result = $denormalizer->supportsDenormalization(null, $targetUnsupportedType);
 
-        $this->assertFalse($result);
+        self::assertFalse($result);
     }
 
     public function testPassesThroughStreamInstance(): void
     {
         $targetStream = $this->createMock(StreamInterface::class);
 
-        $cut = $this->getCut();
+        $denormalizer = $this->getCut();
 
-        $result = $cut->denormalize($targetStream, StreamInterface::class);
+        $result = $denormalizer->denormalize($targetStream, StreamInterface::class);
 
-        $this->assertSame($targetStream, $result);
+        self::assertSame($targetStream, $result);
     }
 
     public function testReturnsNullForNullData(): void
     {
-        $cut = $this->getCut();
+        $denormalizer = $this->getCut();
 
-        $result = $cut->denormalize(null, StreamInterface::class);
+        $result = $denormalizer->denormalize(null, StreamInterface::class);
 
-        $this->assertNull($result);
+        self::assertNull($result);
     }
 
     public function testThrowsForNonStreamData(): void
     {
         $targetNonStreamData = 'not a stream';
 
-        $cut = $this->getCut();
+        $denormalizer = $this->getCut();
 
-        $this->expectException(\InvalidArgumentException::class);
-        $cut->denormalize($targetNonStreamData, StreamInterface::class);
+        $this->expectException(InvalidArgumentException::class);
+        $denormalizer->denormalize($targetNonStreamData, StreamInterface::class);
     }
 }

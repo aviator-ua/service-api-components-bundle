@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
 
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -25,11 +26,13 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface
         }
 
         if (!$data instanceof StreamInterface) {
-            throw new \InvalidArgumentException(sprintf(
-                'Expected an instance of "%s", got "%s".',
-                StreamInterface::class,
-                get_debug_type($data)
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Expected an instance of "%s", got "%s".',
+                    StreamInterface::class,
+                    is_object($data) ? get_class($data) : gettype($data)
+                )
+            );
         }
 
         return $data;
@@ -38,12 +41,5 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
     {
         return is_a($type, StreamInterface::class, true);
-    }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [
-            StreamInterface::class => true,
-        ];
     }
 }
