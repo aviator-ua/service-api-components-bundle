@@ -342,6 +342,14 @@ class UploadedFileStreamTest extends TestCase
         self::assertSame($targetIsReadable, $result);
     }
 
+    public function testGetUploadedFileReturnsConstructorArgument(): void
+    {
+        $service = $this->getCut();
+        $result = $service->getUploadedFile();
+
+        self::assertSame($this->uploadedFile, $result);
+    }
+
     private function getCut(): UploadedFileStream
     {
         return new UploadedFileStream($this->inner, $this->uploadedFile);

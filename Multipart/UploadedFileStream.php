@@ -121,4 +121,12 @@ final class UploadedFileStream implements StreamInterface
 
         return $this->inner->getMetadata($key);
     }
+
+    /**
+     * Escape hatch for code that needs Symfony-specific file operations
+     */
+    public function getUploadedFile(): UploadedFile
+    {
+        return $this->uploadedFile;
+    }
 }
