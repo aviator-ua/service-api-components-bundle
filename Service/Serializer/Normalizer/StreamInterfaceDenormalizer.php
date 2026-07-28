@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
 
-use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class StreamInterfaceDenormalizer implements DenormalizerInterface
@@ -26,12 +26,11 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface
         }
 
         if (!$data instanceof StreamInterface) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Expected an instance of "%s", got "%s".',
-                    StreamInterface::class,
-                    is_object($data) ? get_class($data) : gettype($data)
-                )
+            throw NotNormalizableValueException::createForUnexpectedDataType(
+                sprintf('Expected an instance of "%s".', StreamInterface::class),
+                $data,
+                [StreamInterface::class],
+                $context['deserialization_path'] ?? null
             );
         }
 
@@ -41,5 +40,15 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface
     public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
     {
         return is_a($type, StreamInterface::class, true);
+    }
+
+    /**
+     * Required by DenormalizerInterface since symfony/serializer 7.0. `'object' => false`
+     * because supportsDenormalization() matches subclasses via is_a(), and false keeps it
+     * in the loop rather than caching a wrong answer for a concrete implementation.
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return ['object' => false];
     }
 }

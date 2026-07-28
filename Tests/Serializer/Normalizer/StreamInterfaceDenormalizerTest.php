@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Tests\Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
 
 use Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer\StreamInterfaceDenormalizer;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
 class StreamInterfaceDenormalizerTest extends TestCase
 {
@@ -71,7 +71,16 @@ class StreamInterfaceDenormalizerTest extends TestCase
 
         $denormalizer = $this->getCut();
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NotNormalizableValueException::class);
         $denormalizer->denormalize($targetNonStreamData, StreamInterface::class);
+    }
+
+    public function testGetSupportedTypesReturnsUncachedObject(): void
+    {
+        $denormalizer = $this->getCut();
+
+        $result = $denormalizer->getSupportedTypes(null);
+
+        self::assertSame(['object' => false], $result);
     }
 }
