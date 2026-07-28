@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
+namespace Auto1\ServiceAPIComponentsBundle\Tests\Service\Serializer\Normalizer;
 
 use Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer\StreamInterfaceDenormalizer;
 use PHPUnit\Framework\TestCase;
