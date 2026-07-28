@@ -20,10 +20,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadedFileStreamTest extends TestCase
 {
-    private static $targetMimeType = 'image/png';
-    private static $targetFilename = 'file.txt';
-    private static $targetMode = 'r';
-    private static $targetPayload = 'Test Payload';
+    private const TARGET_MIME_TYPE = 'image/png';
+    private const TARGET_FILENAME = 'image.png';
+    private const TARGET_MODE = 'r';
+    private const TARGET_PAYLOAD = 'Test Payload';
 
     /**
      * @var StreamInterface&MockObject
@@ -45,7 +45,7 @@ class UploadedFileStreamTest extends TestCase
     {
         $this->uploadedFile
             ->method('getClientMimeType')
-            ->willReturn(self::$targetMimeType);
+            ->willReturn(self::TARGET_MIME_TYPE)
         ;
 
         $this->inner
@@ -56,14 +56,14 @@ class UploadedFileStreamTest extends TestCase
         $service = $this->getCut();
         $result = $service->getMetadata('mime-type');
 
-        self::assertSame(self::$targetMimeType, $result);
+        self::assertSame(self::TARGET_MIME_TYPE, $result);
     }
 
     public function testGetMetadataFilenameReturnsClientOriginalName(): void
     {
         $this->uploadedFile
             ->method('getClientOriginalName')
-            ->willReturn(self::$targetFilename)
+            ->willReturn(self::TARGET_FILENAME)
         ;
 
         $this->inner
@@ -74,14 +74,14 @@ class UploadedFileStreamTest extends TestCase
         $service = $this->getCut();
         $result = $service->getMetadata('filename');
 
-        self::assertSame(self::$targetFilename, $result);
+        self::assertSame(self::TARGET_FILENAME, $result);
     }
 
     public function testGetMetadataWithoutKeyMergesInnerWithMimeTypeAndFilename(): void
     {
         $fileMetadata = [
             'wrapper_type' => 'plainfile',
-            'mode' => self::$targetMode,
+            'mode' => self::TARGET_MODE,
         ];
 
         $this->inner
@@ -92,12 +92,12 @@ class UploadedFileStreamTest extends TestCase
 
         $this->uploadedFile
             ->method('getClientMimeType')
-            ->willReturn(self::$targetMimeType)
+            ->willReturn(self::TARGET_MIME_TYPE)
         ;
 
         $this->uploadedFile
             ->method('getClientOriginalName')
-            ->willReturn(self::$targetFilename)
+            ->willReturn(self::TARGET_FILENAME)
         ;
 
         $service = $this->getCut();
@@ -107,8 +107,8 @@ class UploadedFileStreamTest extends TestCase
             array_merge(
                 $fileMetadata,
                 [
-                    'mime-type' => self::$targetMimeType,
-                    'filename' => self::$targetFilename,
+                    'mime-type' => self::TARGET_MIME_TYPE,
+                    'filename' => self::TARGET_FILENAME,
                 ]
             ),
             $result
@@ -121,13 +121,13 @@ class UploadedFileStreamTest extends TestCase
             ->expects(self::once())
             ->method('getMetadata')
             ->with('mode')
-            ->willReturn(self::$targetMode)
+            ->willReturn(self::TARGET_MODE)
         ;
 
         $service = $this->getCut();
         $result = $service->getMetadata('mode');
 
-        self::assertSame(self::$targetMode, $result);
+        self::assertSame(self::TARGET_MODE, $result);
     }
 
     public function testReadDelegatesToInner(): void
@@ -137,13 +137,13 @@ class UploadedFileStreamTest extends TestCase
         $this->inner->expects(self::once())
             ->method('read')
             ->with($targetLength)
-            ->willReturn(self::$targetPayload)
+            ->willReturn(self::TARGET_PAYLOAD)
         ;
 
         $service = $this->getCut();
         $result = $service->read($targetLength);
 
-        self::assertSame(self::$targetPayload, $result);
+        self::assertSame(self::TARGET_PAYLOAD, $result);
     }
 
     public function testSeekDelegatesToInner(): void
@@ -165,13 +165,13 @@ class UploadedFileStreamTest extends TestCase
         $this->inner
             ->expects(self::once())
             ->method('getContents')
-            ->willReturn(self::$targetPayload)
+            ->willReturn(self::TARGET_PAYLOAD)
         ;
 
         $service = $this->getCut();
         $result = $service->getContents();
 
-        self::assertSame(self::$targetPayload, $result);
+        self::assertSame(self::TARGET_PAYLOAD, $result);
     }
 
     public function testToStringDelegatesToInner(): void
@@ -316,12 +316,12 @@ class UploadedFileStreamTest extends TestCase
         $this->inner
             ->expects(self::once())
             ->method('write')
-            ->with(self::$targetPayload)
+            ->with(self::TARGET_PAYLOAD)
             ->willReturn($targetBytesWritten)
         ;
 
         $service = $this->getCut();
-        $result = $service->write(self::$targetPayload);
+        $result = $service->write(self::TARGET_PAYLOAD);
 
         self::assertSame($targetBytesWritten, $result);
     }
