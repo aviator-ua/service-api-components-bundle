@@ -21,7 +21,7 @@ class EndpointProviderConfiguration implements EndpointProviderInterface
     ];
 
     const DEFAULT_FORMAT = EndpointInterface::FORMAT_JSON;
-    const VOID_FORMAT = 'void';
+    const VOID_FORMAT = EndpointInterface::FORMAT_VOID;
 
     /**
      * @var EndpointFactoryInterface

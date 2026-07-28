@@ -9,11 +9,12 @@
 */
 namespace Auto1\ServiceAPIComponentsBundle\Service\Serializer\Encoder;
 
+use Auto1\ServiceAPIComponentsBundle\Service\Endpoint\EndpointInterface;
 use Symfony\Component\Serializer\Encoder\EncoderInterface;
 
 class UrlEncoder implements EncoderInterface
 {
-    const FORMAT = 'url';
+    const FORMAT = EndpointInterface::FORMAT_URL;
 
     /**
      * @var UrlEncode

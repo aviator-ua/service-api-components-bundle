@@ -20,6 +20,12 @@ interface EndpointInterface extends RequestMethodInterface
 {
     const FORMAT_JSON = 'json';
 
+    const FORMAT_MULTIPART = 'multipart';
+
+    const FORMAT_URL = 'url';
+
+    const FORMAT_VOID = 'void';
+
     /**
      * One of METHOD_* constants
      *
