@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the auto1-oss/service-api-components-bundle.
  *
@@ -17,6 +18,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class UploadedFileStream implements StreamInterface
 {
+    public const METADATA_MIME_TYPE = 'mime-type';
+    public const METADATA_FILENAME = 'filename';
+
     private StreamInterface $inner;
 
     private UploadedFile $uploadedFile;
@@ -97,13 +101,17 @@ final class UploadedFileStream implements StreamInterface
         return $this->inner->getContents();
     }
 
+    /**
+     * The MIME type and filename are client-supplied and unvalidated — do not use them for
+     * validation or authorization. UploadedFile::getMimeType() is the content-guessed one.
+     */
     public function getMetadata(?string $key = null)
     {
-        if ('mime-type' === $key) {
+        if (self::METADATA_MIME_TYPE === $key) {
             return $this->uploadedFile->getClientMimeType();
         }
 
-        if ('filename' === $key) {
+        if (self::METADATA_FILENAME === $key) {
             return $this->uploadedFile->getClientOriginalName();
         }
 
@@ -113,8 +121,8 @@ final class UploadedFileStream implements StreamInterface
             return array_merge(
                 is_array($innerMetadata) ? $innerMetadata : [],
                 [
-                    'mime-type' => $this->uploadedFile->getClientMimeType(),
-                    'filename' => $this->uploadedFile->getClientOriginalName(),
+                    self::METADATA_MIME_TYPE => $this->uploadedFile->getClientMimeType(),
+                    self::METADATA_FILENAME => $this->uploadedFile->getClientOriginalName(),
                 ]
             );
         }
