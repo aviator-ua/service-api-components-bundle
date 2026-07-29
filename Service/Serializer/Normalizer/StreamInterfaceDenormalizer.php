@@ -47,6 +47,9 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerIn
         return is_a($type, StreamInterface::class, true);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function normalize($object, $format = null, array $context = []): array
     {
         throw new LogicException(sprintf(

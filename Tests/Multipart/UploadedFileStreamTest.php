@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the auto1-oss/service-api-components-bundle.
  *
