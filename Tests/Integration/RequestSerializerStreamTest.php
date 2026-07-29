@@ -65,7 +65,8 @@ class RequestSerializerStreamTest extends TestCase
             ;
         }
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));
+        $locator = new FileLocator(__DIR__ . '/../../Resources/config');
+        $loader = new YamlFileLoader($container, $locator);
         $loader->load(self::CONFIG_FILE);
 
         $container
@@ -86,7 +87,9 @@ class RequestSerializerStreamTest extends TestCase
         $serializer = $this->buildRequestSerializer();
         $stream = $this->createMock(StreamInterface::class);
 
-        self::assertSame($stream, $serializer->denormalize($stream, StreamInterface::class));
+        $result = $serializer->denormalize($stream, StreamInterface::class);
+
+        self::assertSame($stream, $result);
     }
 
     /**

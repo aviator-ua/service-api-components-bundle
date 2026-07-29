@@ -53,8 +53,8 @@ class UploadedFileStreamTest extends TestCase
             ->method('getMetadata')
         ;
 
-        $service = $this->getCut();
-        $result = $service->getMetadata('mime-type');
+        $target = $this->getCut();
+        $result = $target->getMetadata(UploadedFileStream::METADATA_MIME_TYPE);
 
         self::assertSame(self::TARGET_MIME_TYPE, $result);
     }
@@ -71,8 +71,8 @@ class UploadedFileStreamTest extends TestCase
             ->method('getMetadata')
         ;
 
-        $service = $this->getCut();
-        $result = $service->getMetadata('filename');
+        $target = $this->getCut();
+        $result = $target->getMetadata(UploadedFileStream::METADATA_FILENAME);
 
         self::assertSame(self::TARGET_FILENAME, $result);
     }
@@ -100,15 +100,15 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn(self::TARGET_FILENAME)
         ;
 
-        $service = $this->getCut();
-        $result = $service->getMetadata();
+        $target = $this->getCut();
+        $result = $target->getMetadata();
 
         self::assertSame(
             array_merge(
                 $fileMetadata,
                 [
-                    'mime-type' => self::TARGET_MIME_TYPE,
-                    'filename' => self::TARGET_FILENAME,
+                    UploadedFileStream::METADATA_MIME_TYPE => self::TARGET_MIME_TYPE,
+                    UploadedFileStream::METADATA_FILENAME => self::TARGET_FILENAME,
                 ]
             ),
             $result
@@ -124,8 +124,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn(self::TARGET_MODE)
         ;
 
-        $service = $this->getCut();
-        $result = $service->getMetadata('mode');
+        $target = $this->getCut();
+        $result = $target->getMetadata('mode');
 
         self::assertSame(self::TARGET_MODE, $result);
     }
@@ -140,8 +140,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn(self::TARGET_PAYLOAD)
         ;
 
-        $service = $this->getCut();
-        $result = $service->read($targetLength);
+        $target = $this->getCut();
+        $result = $target->read($targetLength);
 
         self::assertSame(self::TARGET_PAYLOAD, $result);
     }
@@ -156,8 +156,8 @@ class UploadedFileStreamTest extends TestCase
             ->with($targetOffset, SEEK_SET)
         ;
 
-        $service = $this->getCut();
-        $service->seek($targetOffset);
+        $target = $this->getCut();
+        $target->seek($targetOffset);
     }
 
     public function testGetContentsDelegatesToInner(): void
@@ -168,25 +168,25 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn(self::TARGET_PAYLOAD)
         ;
 
-        $service = $this->getCut();
-        $result = $service->getContents();
+        $target = $this->getCut();
+        $result = $target->getContents();
 
         self::assertSame(self::TARGET_PAYLOAD, $result);
     }
 
     public function testToStringDelegatesToInner(): void
     {
-        $stringified = 'targetStringified';
+        $targetStringified = 'targetStringified';
 
         $this->inner
             ->expects(self::once())
             ->method('__toString')
-            ->willReturn($stringified)
+            ->willReturn($targetStringified)
         ;
 
-        $service = $this->getCut();
+        $target = $this->getCut();
 
-        self::assertSame($stringified, (string) $service);
+        self::assertSame($targetStringified, (string) $target);
     }
 
     public function testCloseDelegatesToInner(): void
@@ -196,8 +196,8 @@ class UploadedFileStreamTest extends TestCase
             ->method('close')
         ;
 
-        $service = $this->getCut();
-        $service->close();
+        $target = $this->getCut();
+        $target->close();
     }
 
     public function testDetachDelegatesToInner(): void
@@ -210,8 +210,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetResource)
         ;
 
-        $service = $this->getCut();
-        $result = $service->detach();
+        $target = $this->getCut();
+        $result = $target->detach();
 
         self::assertSame($targetResource, $result);
 
@@ -228,8 +228,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetSize)
         ;
 
-        $service = $this->getCut();
-        $result = $service->getSize();
+        $target = $this->getCut();
+        $result = $target->getSize();
 
         self::assertSame($targetSize, $result);
     }
@@ -244,8 +244,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetPosition)
         ;
 
-        $service = $this->getCut();
-        $result = $service->tell();
+        $target = $this->getCut();
+        $result = $target->tell();
 
         self::assertSame($targetPosition, $result);
     }
@@ -260,8 +260,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetEof)
         ;
 
-        $service = $this->getCut();
-        $result = $service->eof();
+        $target = $this->getCut();
+        $result = $target->eof();
 
         self::assertSame($targetEof, $result);
     }
@@ -276,8 +276,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetIsSeekable)
         ;
 
-        $service = $this->getCut();
-        $result = $service->isSeekable();
+        $target = $this->getCut();
+        $result = $target->isSeekable();
 
         self::assertSame($targetIsSeekable, $result);
     }
@@ -289,8 +289,8 @@ class UploadedFileStreamTest extends TestCase
             ->method('rewind')
         ;
 
-        $service = $this->getCut();
-        $service->rewind();
+        $target = $this->getCut();
+        $target->rewind();
     }
 
     public function testIsWritableDelegatesToInner(): void
@@ -303,8 +303,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetIsWritable)
         ;
 
-        $service = $this->getCut();
-        $result = $service->isWritable();
+        $target = $this->getCut();
+        $result = $target->isWritable();
 
         self::assertSame($targetIsWritable, $result);
     }
@@ -320,8 +320,8 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetBytesWritten)
         ;
 
-        $service = $this->getCut();
-        $result = $service->write(self::TARGET_PAYLOAD);
+        $target = $this->getCut();
+        $result = $target->write(self::TARGET_PAYLOAD);
 
         self::assertSame($targetBytesWritten, $result);
     }
@@ -336,16 +336,16 @@ class UploadedFileStreamTest extends TestCase
             ->willReturn($targetIsReadable)
         ;
 
-        $service = $this->getCut();
-        $result = $service->isReadable();
+        $target = $this->getCut();
+        $result = $target->isReadable();
 
         self::assertSame($targetIsReadable, $result);
     }
 
     public function testGetUploadedFileReturnsConstructorArgument(): void
     {
-        $service = $this->getCut();
-        $result = $service->getUploadedFile();
+        $target = $this->getCut();
+        $result = $target->getUploadedFile();
 
         self::assertSame($this->uploadedFile, $result);
     }

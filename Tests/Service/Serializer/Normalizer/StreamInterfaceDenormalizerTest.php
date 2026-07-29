@@ -13,9 +13,11 @@ declare(strict_types=1);
 
 namespace Auto1\ServiceAPIComponentsBundle\Tests\Service\Serializer\Normalizer;
 
+use Auto1\ServiceAPIComponentsBundle\Service\Endpoint\EndpointInterface;
 use Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer\StreamInterfaceDenormalizer;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
 class StreamInterfaceDenormalizerTest extends TestCase
@@ -27,9 +29,9 @@ class StreamInterfaceDenormalizerTest extends TestCase
 
     public function testSupportsDenormalizationForStreamInterface(): void
     {
-        $denormalizer = $this->getCut();
+        $target = $this->getCut();
 
-        $result = $denormalizer->supportsDenormalization(null, StreamInterface::class);
+        $result = $target->supportsDenormalization(null, StreamInterface::class);
 
         self::assertTrue($result);
     }
@@ -38,9 +40,9 @@ class StreamInterfaceDenormalizerTest extends TestCase
     {
         $targetUnsupportedType = \stdClass::class;
 
-        $denormalizer = $this->getCut();
+        $target = $this->getCut();
 
-        $result = $denormalizer->supportsDenormalization(null, $targetUnsupportedType);
+        $result = $target->supportsDenormalization(null, $targetUnsupportedType);
 
         self::assertFalse($result);
     }
@@ -49,18 +51,18 @@ class StreamInterfaceDenormalizerTest extends TestCase
     {
         $targetStream = $this->createMock(StreamInterface::class);
 
-        $denormalizer = $this->getCut();
+        $target = $this->getCut();
 
-        $result = $denormalizer->denormalize($targetStream, StreamInterface::class);
+        $result = $target->denormalize($targetStream, StreamInterface::class);
 
         self::assertSame($targetStream, $result);
     }
 
     public function testReturnsNullForNullData(): void
     {
-        $denormalizer = $this->getCut();
+        $target = $this->getCut();
 
-        $result = $denormalizer->denormalize(null, StreamInterface::class);
+        $result = $target->denormalize(null, StreamInterface::class);
 
         self::assertNull($result);
     }
@@ -69,18 +71,50 @@ class StreamInterfaceDenormalizerTest extends TestCase
     {
         $targetNonStreamData = 'not a stream';
 
-        $denormalizer = $this->getCut();
+        $target = $this->getCut();
 
         $this->expectException(NotNormalizableValueException::class);
-        $denormalizer->denormalize($targetNonStreamData, StreamInterface::class);
+        $target->denormalize($targetNonStreamData, StreamInterface::class);
     }
 
-    public function testGetSupportedTypesReturnsUncachedObject(): void
+    public function testSupportsNormalizationForStreamInstance(): void
     {
-        $denormalizer = $this->getCut();
+        $targetStream = $this->createMock(StreamInterface::class);
 
-        $result = $denormalizer->getSupportedTypes(null);
+        $target = $this->getCut();
 
-        self::assertSame(['object' => false], $result);
+        $result = $target->supportsNormalization($targetStream);
+
+        self::assertTrue($result);
+    }
+
+    public function testDoesNotSupportNormalizationOfOtherData(): void
+    {
+        $targetNonStreamData = new \stdClass();
+
+        $target = $this->getCut();
+
+        $result = $target->supportsNormalization($targetNonStreamData);
+
+        self::assertFalse($result);
+    }
+
+    public function testNormalizeThrowsForStream(): void
+    {
+        $targetStream = $this->createMock(StreamInterface::class);
+
+        $target = $this->getCut();
+
+        $this->expectException(LogicException::class);
+        $target->normalize($targetStream, EndpointInterface::FORMAT_JSON);
+    }
+
+    public function testGetSupportedTypesReturnsCacheableStreamInterfaceEntry(): void
+    {
+        $target = $this->getCut();
+
+        $result = $target->getSupportedTypes(null);
+
+        self::assertSame([StreamInterface::class => true], $result);
     }
 }

@@ -13,42 +13,62 @@ declare(strict_types=1);
 
 namespace Auto1\ServiceAPIComponentsBundle\Service\Serializer\Normalizer;
 
+use Auto1\ServiceAPIComponentsBundle\Service\Endpoint\EndpointInterface;
 use Psr\Http\Message\StreamInterface;
+use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class StreamInterfaceDenormalizer implements DenormalizerInterface
+/**
+ * Params untyped to stay loadable on symfony/serializer 4.x, whose interfaces are untyped.
+ */
+class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
-    public function denormalize($data, string $type, ?string $format = null, array $context = []): ?StreamInterface
+    public function denormalize($data, $type, $format = null, array $context = []): ?StreamInterface
     {
         if (null === $data) {
             return null;
         }
 
         if (!$data instanceof StreamInterface) {
-            throw NotNormalizableValueException::createForUnexpectedDataType(
-                sprintf('Expected an instance of "%s".', StreamInterface::class),
-                $data,
-                [StreamInterface::class],
-                $context['deserialization_path'] ?? null
-            );
+            throw new NotNormalizableValueException(sprintf(
+                'Expected an instance of "%s", "%s" given.',
+                StreamInterface::class,
+                is_object($data) ? get_class($data) : gettype($data)
+            ));
         }
 
         return $data;
     }
 
-    public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool
+    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
         return is_a($type, StreamInterface::class, true);
     }
 
+    public function normalize($object, $format = null, array $context = []): array
+    {
+        throw new LogicException(sprintf(
+            'Cannot normalize "%s" to format "%s": streams cannot be embedded in a serialized'
+            . ' request body, use EndpointInterface::FORMAT_MULTIPART ("%s") as the request format.',
+            get_class($object),
+            $format ?? 'null',
+            EndpointInterface::FORMAT_MULTIPART
+        ));
+    }
+
+    public function supportsNormalization($data, $format = null, array $context = []): bool
+    {
+        return $data instanceof StreamInterface;
+    }
+
     /**
-     * Required by DenormalizerInterface since symfony/serializer 7.0. `'object' => false`
-     * because supportsDenormalization() matches subclasses via is_a(), and false keeps it
-     * in the loop rather than caching a wrong answer for a concrete implementation.
+     * Concrete implementations still match the StreamInterface entry (the serializer checks
+     * is_subclass_of() for object-shaped types), so `true` is a safe cacheable answer.
      */
     public function getSupportedTypes(?string $format): array
     {
-        return ['object' => false];
+        return [StreamInterface::class => true];
     }
 }
