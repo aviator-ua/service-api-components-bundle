@@ -25,6 +25,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  */
 class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    /**
+     * @param array<string, mixed> $context
+     */
     public function denormalize($data, $type, $format = null, array $context = []): ?StreamInterface
     {
         if (null === $data) {
@@ -42,12 +45,17 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerIn
         return $data;
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
         return is_a($type, StreamInterface::class, true);
     }
 
     /**
+     * @param array<string, mixed> $context
+     *
      * @return array<mixed>
      */
     public function normalize($object, $format = null, array $context = []): array
@@ -61,6 +69,9 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerIn
         ));
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function supportsNormalization($data, $format = null, array $context = []): bool
     {
         return $data instanceof StreamInterface;
@@ -69,6 +80,8 @@ class StreamInterfaceDenormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * Concrete implementations still match the StreamInterface entry (the serializer checks
      * is_subclass_of() for object-shaped types), so `true` is a safe cacheable answer.
+     *
+     * @return array<string, bool|null>
      */
     public function getSupportedTypes(?string $format): array
     {

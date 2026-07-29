@@ -30,10 +30,7 @@ class EndpointProviderCompilerPass implements CompilerPassInterface
     public const METHOD_REGISTER_ENDPOINT = 'registerEndpoint';
     public const SERVICE_ENDPOINT_REGISTRY = 'auto1.api.endpoint.registry';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $endpointRegistryDefinition = $container->getDefinition(self::SERVICE_ENDPOINT_REGISTRY);
 

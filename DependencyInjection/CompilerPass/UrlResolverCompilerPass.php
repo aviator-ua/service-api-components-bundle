@@ -30,10 +30,7 @@ class UrlResolverCompilerPass implements CompilerPassInterface
     public const METHOD_REGISTER_RESOLVER = 'registerResolver';
     public const SERVICE_CHAIN_RESOLVER = 'auto1.api.url_resolver';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $chainResolverDefinition = $container->getDefinition(self::SERVICE_CHAIN_RESOLVER);
 

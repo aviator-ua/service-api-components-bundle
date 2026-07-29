@@ -23,9 +23,9 @@ use Symfony\Component\DependencyInjection\Loader;
 class Auto1ServiceAPIComponentsExtension extends Extension
 {
     /**
-     * {@inheritdoc}
+     * @param array<array<string, mixed>> $configs
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

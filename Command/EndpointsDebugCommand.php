@@ -40,7 +40,7 @@ class EndpointsDebugCommand extends Command
         $this->endpointRegistry = $endpointRegistry;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('auto1.debug.endpoints');
     }
